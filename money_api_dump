@@ -21,25 +21,98 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: transactions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.transactions (
+    transaction_id bigint NOT NULL,
+    amount numeric(38,2) NOT NULL,
+    type integer NOT NULL,
+    date timestamp(6) without time zone NOT NULL,
+    user_id bigint NOT NULL,
+    receiver_id bigint
+);
+
+
+ALTER TABLE public.transactions OWNER TO postgres;
+
+--
+-- Name: transactions_transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.transactions_transaction_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.transactions_transaction_id_seq OWNER TO postgres;
+
+--
+-- Name: transactions_transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.transactions_transaction_id_seq OWNED BY public.transactions.transaction_id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: ruslangaijin
 --
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
-    balance numeric(10,2) NOT NULL
+    id bigint NOT NULL,
+    balance numeric(38,2) NOT NULL
 );
 
 
 ALTER TABLE public.users OWNER TO ruslangaijin;
 
 --
+-- Name: transactions transaction_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transactions ALTER COLUMN transaction_id SET DEFAULT nextval('public.transactions_transaction_id_seq'::regclass);
+
+
+--
+-- Data for Name: transactions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.transactions (transaction_id, amount, type, date, user_id, receiver_id) FROM stdin;
+1	4.00	2	2024-03-11 07:28:09.545354	1	\N
+2	4.00	2	2024-03-11 07:44:48.84584	1	\N
+3	943.00	2	2024-03-11 07:45:02.762585	1	\N
+4	3999.00	1	2024-03-11 07:45:17.289058	0	\N
+5	2.00	2	2024-03-11 09:13:27.53051	0	1
+6	1234.00	2	2024-03-11 09:31:35.095655	1	1
+\.
+
+
+--
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: ruslangaijin
 --
 
 COPY public.users (id, balance) FROM stdin;
-0	234.00
-1	23442.00
+0	4231.00
+1	23719.00
 \.
+
+
+--
+-- Name: transactions_transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.transactions_transaction_id_seq', 6, true);
+
+
+--
+-- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT transactions_pkey PRIMARY KEY (transaction_id);
 
 
 --
@@ -48,6 +121,14 @@ COPY public.users (id, balance) FROM stdin;
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: transactions fkqwv7rmvc8va8rep7piikrojds; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT fkqwv7rmvc8va8rep7piikrojds FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
